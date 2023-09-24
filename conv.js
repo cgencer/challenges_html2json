@@ -59,16 +59,20 @@ while ((m = tags.exec(input)) !== null) {
     if (m.index === tags.lastIndex) {
         tags.lastIndex++;
     }
-    theJson += '{"tag": "' + m[1] + '", "text": "' + m[3].trim().replace('\n',' ') + '"';
+    theJson += '{"tag": "' + m[1] + '"';
+    let cleanedText = m[3].trim().replaceAll('\n',' ');
+    if(cleanedText !== '')
+    	theJson += ',"text":"' + cleanedText + '"';
+
     m.forEach((match, groupIndex) => {
  
         if(groupIndex == 2){
 			while ((n = attribs.exec(match)) !== null) {
 				if(n[1]=='id')
-					theJson += ', "id": "' + n[4] + '"';
+					theJson += ',"id": "' + n[4] + '"';
 				if(n[1]=='style'){
 					let styles = n[4].split(';');
-					theJson += ', "style":{';
+					theJson += ',"style":{';
 					for (var s = 0; s < styles.length; s++) {
 
 						let parts = styles[s].split(':');
@@ -88,6 +92,5 @@ while ((m = tags.exec(input)) !== null) {
 };
 
 theJson += ']}';
-theJson = theJson.replaceAll(',}', '}');
-theJson = theJson.replaceAll(',]', ']');
+theJson = theJson.replaceAll(',}', '}').replaceAll(',]', ']');
 console.dir(JSON.parse(theJson));
