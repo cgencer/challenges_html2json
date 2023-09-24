@@ -101,9 +101,8 @@ const parser = (input) => {
 		parsedObject.tags.splice(queue[i].child, 1);
 	}
 
-	console.dir(parsedObject);
 	var jsonPretty = JSON.stringify(JSON.parse(JSON.stringify(parsedObject)),null,4);  
-	console.log(jsonPretty);
+	return(jsonPretty);
 }
 
 const fileMode = process.argv.indexOf('-f') > -1 ? true : false;
@@ -116,7 +115,7 @@ if(fileMode){
 			console.error(err);
 			return;
 		}
-		parser(data);
+		console.log(parser(data));
 	});
 }else{
 	// browser-mode

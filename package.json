@@ -4,7 +4,8 @@
   "description": "Symbols Coding Test Write a Javascript node program that takes an HTML that looks like this: <div style=\"background-color: yellow; font-size: 14px\" id=\"first-div\"> \tHello, friends \t<p class=\"para\" style=\"font-faimly: monospace; font-size: 11px\"> \t\tLorem ipsum dolor sit \t</p> \t<footer style=\"width: auto; height: 100px; color: blue\"> \t\t<span> \t\t\tThis is the end \t\t</span> \t</footer> </div> And converts that HTML to an object and prints it. It should look like this: { \ttag: 'div’, \ttext: 'Hello, friends', \tstyle: { \t\tbackgroundColor: 'yellow', \t\tfontSize: '14px' \t}, \tid: 'first-div', \tchildren: [{ \t\ttag: 'p', \t\ttext: 'Lorem ipsum dolor sit', \t\tclass: 'para', \t\tstyle: { \t\t\tfontFamily: 'monospace', \t\t\tfontSize: '11px', \t\t} \t}, { \t\ttag: 'footer', \t\tstyle: { \t\t\twidth: 'auto', \t\t\theight: '100px', \t\t\tcolor: 'blue', \t\t}, \t\tchildren: [{  \t\t\ttag: 'span',  \t\t\ttext: 'This is the end'  \t\t}] \t}] }",
   "main": "conv.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "terminal": "node conv.js -f input.html",
+    "web": "node conv.js -w input.html"
   },
   "author": "",
   "license": "ISC",
