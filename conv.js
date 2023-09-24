@@ -1,7 +1,8 @@
 const tags = /<(?![\/]+)([img|div|p|footer|span]*)([^>]*)>([^<]*)[(^\1)]*/gim;
 const attribs = /(?:[\s]*)([class|style|id]*)=((["']+)((?:\\3|(?:(?!\3)).)*)(\3)*)/gim;
+const parents = /<(?![\/]+)([img|div|p|footer|span]*)[^>]*>[^<]*(<(?![\/]+)(?<!\1)(?:([img|div|p|footer|span]*)[^>]*>)*[^<]*<\/\3>)*/gim;
 let theJson = '';
-const input = `<div style="background-color: yellow; font-size: 14px"
+let input = `<div style="background-color: yellow; font-size: 14px"
 id="first-div">
 	Hello, friends
 	<p class="para" style="font-faimly: monospace; font-size: 11px">
@@ -13,7 +14,6 @@ id="first-div">
 		</span>
 	</footer>
 </div>`;
-
 
 // grab each tag
 // $1 - tag
@@ -42,18 +42,7 @@ if(fileMode){
 }else{
 	// browser-mode
 }
-/*
-	tag: 'div’,
-	text: 'Hello, friends',
-	style: {
-		backgroundColor: 'yellow',
-		fontSize: '14px'
-	},
-	id: 'first-div',
-*/
-/*
-{"tag":"div","text":"Hello, friends","style":{"backgroundColor":"yellow","fontSize":"14px"},"id":"first-div"}
-*/
+
 theJson += '{"tags": [';
 while ((m = tags.exec(input)) !== null) {
     if (m.index === tags.lastIndex) {
@@ -93,4 +82,44 @@ while ((m = tags.exec(input)) !== null) {
 
 theJson += ']}';
 theJson = theJson.replaceAll(',}', '}').replaceAll(',]', ']');
-console.dir(JSON.parse(theJson));
+let parsedObject = JSON.parse(theJson);
+console.dir(parsedObject);
+console.log('it has a length of ' + parsedObject.tags.length);
+let childIndex, parentIndex = 0;
+let newKidOnTheBlock, toRemove = '';
+// restore the family ties after a long time away...
+for (var j = 0; j < 2; j++) {
+	while ((p = parents.exec(input)) !== null) {
+	    if (p.index === parents.lastIndex) {
+	        parents.lastIndex++;
+	    }
+	    for (var i = 0; i < parsedObject.tags.length; i++) {
+	    	toRemove = p[2];
+		    if(parsedObject.tags[i].tag === p[1]){
+		    	console.log('parents index is '+i);
+		    	parentIndex = i;
+
+		    }else if(parsedObject.tags[i].tag === p[3]){
+		    	console.log('kids index is '+i);
+		    	childIndex = i;
+			    newKidOnTheBlock = JSON.stringify(parsedObject.tags[i]);
+		    }
+		    if(parsedObject.tags[parentIndex].children === undefined){
+		    	console.log('created new childroom at '+parentIndex);
+			    parsedObject.tags[parentIndex].children = [];
+		    }
+	    }
+		parsedObject.tags[parentIndex].children.push(JSON.parse(newKidOnTheBlock));
+		parsedObject.tags.splice(childIndex,1);
+		const toRemoveRexExp = new RegExp(toRemove,'img');
+		input = input.replace(toRemoveRexExp, '');
+		console.log(input);
+	}
+}
+console.dir(parsedObject);
+
+console.log(JSON.stringify(parsedObject));
+
+
+
+
