@@ -1,18 +1,8 @@
-Symbols Coding Test
-Write a Javascript node program that takes an HTML that looks like this:
-<div style="background-color: yellow; font-size: 14px"
-id="first-div">
-	Hello, friends
-	<p class="para" style="font-faimly: monospace; font-size: 11px">
-		Lorem ipsum dolor sit
-	</p>
-	<footer style="width: auto; height: 100px; color: blue">
-		<span>
-			This is the end
-		</span>
-	</footer>
-</div>
+# Challenge:
+
+Write a Javascript node program that takes an HTML that looks like the input.html file.
 And converts that HTML to an object and prints it. It should look like this:
+```json
 {
 	tag: 'div’,
 	text: 'Hello, friends',
@@ -42,8 +32,8 @@ And converts that HTML to an object and prints it. It should look like this:
 		}]
 	}]
 }
-
-Requirements:
+```
+## Requirements:
 - The program must run from the CLI by reading a file and the browser by textarea input.
 For example, running node server.js markup.html should print out the Object
 specified above. The input format is an HTML string, and browser API should not be
@@ -60,3 +50,17 @@ file. Ideally, the instructions should be a simple yarn or npm install command a
 published to the npm registry.
 - Send the links to your GitHub repository and NPM package by the end of the 48 hours
 to ************. We will clone, review, and contact you as soon as possible.
+
+## Installation
+
+Just do a **npm i** after cloning the repo
+
+## Usage
+
+### - npm run terminal
+
+Loads the data file and parses it, outputting back to the terminal.
+
+### - npm run web
+
+To run the same thing via the browser.
