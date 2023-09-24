@@ -120,6 +120,6 @@ if(fileMode){
 		}
 		console.log(parser(data));
 	});
-}else{
+}else if(webMode){
 	// browser-mode
 }

@@ -64,3 +64,9 @@ Loads the data file and parses it, outputting back to the terminal.
 ### - npm run web
 
 To run the same thing via the browser.
+
+## Notes
+
+I know that this job requires a cleanly planeed recursive parser. But I wanted to test out if I might be able to do it with RegExp-based queries. Javascript lacks of support for recursive queries, so I had to severe the parent-child relationship and build it by indexing the objects later on.
+
+For the sake of completing the main code within 24h, I also used a not-so clean type of handling the objects by JSON stringify/parse methods.
