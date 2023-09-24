@@ -101,14 +101,17 @@ const parser = (input) => {
 		parsedObject.tags.splice(queue[i].child, 1);
 	}
 
-	var jsonPretty = JSON.stringify(JSON.parse(JSON.stringify(parsedObject)),null,4);  
+	var jsonPretty = JSON.stringify(JSON.parse(JSON.stringify(parsedObject.tags[0])),null,4);  
 	return(jsonPretty);
 }
 
 const fileMode = process.argv.indexOf('-f') > -1 ? true : false;
+const webMode = process.argv.indexOf('-w') > -1 ? true : false;
+
+fileName = process.argv[3];
+
 if(fileMode){
 	// load the file
-	fileName = process.argv[3];
 	fileName = path.resolve(fileName);
 	fs.readFile(fileName, 'utf8', (err, data) => {
 		if (err) {
