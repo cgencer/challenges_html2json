@@ -1,3 +1,4 @@
+var _ = require('lodash');
 const tags = /<(?![\/]+)([img|div|p|footer|span]*)([^>]*)>([^<]*)[(^\1)]*/gim;
 const attribs = /(?:[\s]*)([class|style|id]*)=((["']+)((?:\\3|(?:(?!\3)).)*)(\3)*)/gim;
 const parents = /<(?![\/]+)([img|div|p|footer|span]*)[^>]*>[^<]*(<(?![\/]+)(?<!\1)(?:([img|div|p|footer|span]*)[^>]*>)*[^<]*<\/\3>)*/gim;
@@ -85,41 +86,47 @@ theJson = theJson.replaceAll(',}', '}').replaceAll(',]', ']');
 let parsedObject = JSON.parse(theJson);
 console.dir(parsedObject);
 console.log('it has a length of ' + parsedObject.tags.length);
-let childIndex, parentIndex = 0;
-let newKidOnTheBlock, toRemove = '';
+console.log('------------------------------');
+let queue = [];
+let childIndex, parentIndex = null;
 // restore the family ties after a long time away...
-for (var j = 0; j < 2; j++) {
+for (var j = 0; j < parsedObject.tags.length; j++) {
 	while ((p = parents.exec(input)) !== null) {
-	    if (p.index === parents.lastIndex) {
+	    if (p.index === parents.lastIndex)
 	        parents.lastIndex++;
-	    }
-	    for (var i = 0; i < parsedObject.tags.length; i++) {
-	    	toRemove = p[2];
-		    if(parsedObject.tags[i].tag === p[1]){
-		    	console.log('parents index is '+i);
-		    	parentIndex = i;
 
-		    }else if(parsedObject.tags[i].tag === p[3]){
-		    	console.log('kids index is '+i);
-		    	childIndex = i;
-			    newKidOnTheBlock = JSON.stringify(parsedObject.tags[i]);
+	    if(p[1] && p[2] && p[3]){
+		    for (var i = 0; i < parsedObject.tags.length; i++) {
+		    	const dogTag = parsedObject.tags[i].tag;
+			    if (dogTag === p[1]) parentIndex = i;
+			    if (dogTag === p[3]) childIndex  = i;
 		    }
-		    if(parsedObject.tags[parentIndex].children === undefined){
-		    	console.log('created new childroom at '+parentIndex);
-			    parsedObject.tags[parentIndex].children = [];
-		    }
+			queue.push({parent: parentIndex, 
+						child:  childIndex, 
+						tag: p[1],
+						theKid: JSON.stringify(parsedObject.tags[childIndex])});
+			const removalRegExp = new RegExp(p[2], 'img');
+			input = input.replace(removalRegExp, '');
 	    }
-		parsedObject.tags[parentIndex].children.push(JSON.parse(newKidOnTheBlock));
-		parsedObject.tags.splice(childIndex,1);
-		const toRemoveRexExp = new RegExp(toRemove,'img');
-		input = input.replace(toRemoveRexExp, '');
-		console.log(input);
+		childIndex = null;
+		parentIndex = null;
 	}
 }
+console.dir(queue);
+queue = _.orderBy(queue, ['parent'], ['desc']);
+console.dir(queue);
+
+for (var i = 0; i < queue.length; i++) {
+	if(!parsedObject.tags[ queue[i].parent ].children)
+		parsedObject.tags[ queue[i].parent ].children = [];
+	parsedObject.tags[ queue[i].parent ].children.push( parsedObject.tags[ queue[i].child ] );
+}
+queue = _.orderBy(queue, ['child'], ['desc']);
+for (var i = 0; i < queue.length; i++) {
+	console.log(queue[i].child);
+	parsedObject.tags.splice(queue[i].child, 1);
+}
+
 console.dir(parsedObject);
 
-console.log(JSON.stringify(parsedObject));
-
-
-
-
+console.dir(JSON.stringify(parsedObject));
