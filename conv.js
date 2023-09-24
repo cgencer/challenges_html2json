@@ -1,5 +1,21 @@
 var _ = require('lodash');
+// grab each tag
+// $1 - tag
+// $2 - attribute-set
+// $3 - content
+/*
+<(?![\/]+)([img|div|p|footer|span]*)([^>]*)>([^<]*)[(^\1)]*
+*/
 const tags = /<(?![\/]+)([img|div|p|footer|span]*)([^>]*)>([^<]*)[(^\1)]*/gim;
+// grab each of the attributes of the tags
+// $1 - attribute
+// $2 - quoted attribute-set
+// $3 - ' / "
+// $4 - clean attribute-set
+// $5 - ' / "
+/*
+(?:[\s]*)([class|style|id]*)=((["']+)((?:\\3|(?:(?!\3)).)*)(\3)*)
+*/
 const attribs = /(?:[\s]*)([class|style|id]*)=((["']+)((?:\\3|(?:(?!\3)).)*)(\3)*)/gim;
 const parents = /<(?![\/]+)([img|div|p|footer|span]*)[^>]*>[^<]*(<(?![\/]+)(?<!\1)(?:([img|div|p|footer|span]*)[^>]*>)*[^<]*<\/\3>)*/gim;
 let theJson = '';
@@ -15,25 +31,6 @@ id="first-div">
 		</span>
 	</footer>
 </div>`;
-
-// grab each tag
-// $1 - tag
-// $2 - attribute-set
-// $3 - content
-/*
-<(?![\/]+)([img|div|p|footer|span]*)([^>]*)>([^<]*)[(^\1)]*
-*/
-
-// grab each of the attributes of the tags
-// $1 - attribute
-// $2 - quoted attribute-set
-// $3 - ' / "
-// $4 - clean attribute-set
-// $5 - ' / "
-/*
-(?:[\s]*)([class|style|id]*)=((["']+)((?:\\3|(?:(?!\3)).)*)(\3)*)
-*/
-
 
 
 const fileMode = process.argv.indexOf('-f') > -1 ? true : false;
@@ -84,9 +81,6 @@ while ((m = tags.exec(input)) !== null) {
 theJson += ']}';
 theJson = theJson.replaceAll(',}', '}').replaceAll(',]', ']');
 let parsedObject = JSON.parse(theJson);
-console.dir(parsedObject);
-console.log('it has a length of ' + parsedObject.tags.length);
-console.log('------------------------------');
 let queue = [];
 let childIndex, parentIndex = null;
 // restore the family ties after a long time away...
@@ -112,9 +106,7 @@ for (var j = 0; j < parsedObject.tags.length; j++) {
 		parentIndex = null;
 	}
 }
-console.dir(queue);
 queue = _.orderBy(queue, ['parent'], ['desc']);
-console.dir(queue);
 
 for (var i = 0; i < queue.length; i++) {
 	if(!parsedObject.tags[ queue[i].parent ].children)
@@ -123,10 +115,10 @@ for (var i = 0; i < queue.length; i++) {
 }
 queue = _.orderBy(queue, ['child'], ['desc']);
 for (var i = 0; i < queue.length; i++) {
-	console.log(queue[i].child);
 	parsedObject.tags.splice(queue[i].child, 1);
 }
 
 console.dir(parsedObject);
+var jsonPretty = JSON.stringify(JSON.parse(JSON.stringify(parsedObject)),null,4);  
+console.log(jsonPretty);
 
-console.dir(JSON.stringify(parsedObject));
