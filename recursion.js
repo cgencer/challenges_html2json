@@ -15,7 +15,7 @@ function searchItem(item) {
       searchItem(item[key])
     }
     if (typeof item[key] === "string") {
-      let searchAsRegEx = new RegExp(searchTerm, "gi");
+      let searchAsRegEx = new RegExp(searchTerm, "img");
       if (item[key].match(searchAsRegEx)) {
         result.push(item.id)
       }

@@ -59,4 +59,4 @@ the code there, and write instructions on installing and running the code in the
 file. Ideally, the instructions should be a simple yarn or npm install command and
 published to the npm registry.
 - Send the links to your GitHub repository and NPM package by the end of the 48 hours
-to josh@symbols.app. We will clone, review, and contact you as soon as possible.
+to ************. We will clone, review, and contact you as soon as possible.

@@ -66,8 +66,21 @@ while ((m = tags.exec(input)) !== null) {
 			while ((n = attribs.exec(match)) !== null) {
 				if(n[1]=='id')
 					theJson += ', "id": "' + n[4] + '"';
-//				if(n[1]=='style')
-//					theJson += ', "style": {"' + n[4] + '"}';
+				if(n[1]=='style'){
+					let styles = n[4].split(';');
+					theJson += ', "style":{';
+					for (var s = 0; s < styles.length; s++) {
+
+						let parts = styles[s].split(':');
+						let part = '';
+						for (var p = 0; p < 2; p++) {
+							part += '"' + parts[p].trim() + '"';
+							part += (p===0) ? ':' : '';
+						}
+						theJson += (p == 2) ? part + ',' : part;
+					}
+					theJson += '}';
+				}
 	        };
     	};
     });
@@ -75,5 +88,6 @@ while ((m = tags.exec(input)) !== null) {
 };
 
 theJson += ']}';
-theJson = theJson.replace('},]}', '}]}');
+theJson = theJson.replaceAll(',}', '}');
+theJson = theJson.replaceAll(',]', ']');
 console.dir(JSON.parse(theJson));
