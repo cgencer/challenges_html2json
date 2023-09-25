@@ -70,3 +70,32 @@ To run the same thing via the browser.
 I know that this job requires a cleanly planeed recursive parser. But I wanted to test out if I might be able to do it with RegExp-based queries. Javascript lacks of support for recursive queries, so I had to severe the parent-child relationship and build it by indexing the objects later on.
 
 For the sake of completing the main code within 24h, I also used a not-so clean type of handling the objects by JSON stringify/parse methods.
+
+As recursive queries and repeating patterns within JS-RegExp are not possible, I had to either code a text-parser or use blocks of RegExp to simulate the recursive behaviour. Even though you can't recurse the RegExp, you still can fetch the parent of html tags. I've used the array queue to preserve the relationships of the tree-structure and after flattening trough HTML-tag parsing with RegExp, I've built up the tree starting from bottom-up to the top-level.
+
+### Here are the RegExp expressions I've used:
+* __tags:__ Fetches all HTML tags in a flattened order.
+
+/<(?![\/]+)([img|div|p|footer|span]*)([^>]*)>([^<]*)[(^\1)]*/gim;
+
+$1 - tag
+$2 - attribute-set
+$3 - content
+
+* __attribs:__ Fetches every attribute seperately for each HTML-tag.
+
+/(?:[\s]*)([class|style|id]*)=((["']+)((?:\\3|(?:(?!\3)).)*)(\3)*)/gim;
+
+It uses back-referencing for matching single/double quotes
+
+$1 - attribute
+$2 - quoted attribute-set
+$3 - ' / "
+$4 - clean attribute-set
+$5 - ' / "
+
+* __parents:__ Fetches the parent-child relationship of the HTML tags and stores them for later usage in __queue__ array.
+
+/<(?![\/]+)([img|div|p|footer|span]*)[^>]*>[^<]*(<(?![\/]+)(?<!\1)(?:([img|div|p|footer|span]*)[^>]*>)*[^<]*<\/\3>)*/gim;
+
+This one was pretty nasty, uses back-referencing to match closing html-tags and marking excluded tags.
