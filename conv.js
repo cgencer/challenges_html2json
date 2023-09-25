@@ -1,6 +1,8 @@
 const fs = require('fs');
 const _ = require('lodash');
 const path = require('path');
+const http = require('http');
+const PORT = 8080;
 
 const parser = (input) => {
 	// grab each tag
@@ -108,18 +110,24 @@ const parser = (input) => {
 const fileMode = process.argv.indexOf('-f') > -1 ? true : false;
 const webMode = process.argv.indexOf('-w') > -1 ? true : false;
 
-fileName = process.argv[3];
+fileName = path.resolve(process.argv[3]);
 
 if(fileMode){
 	// load the file
-	fileName = path.resolve(fileName);
 	fs.readFile(fileName, 'utf8', (err, data) => {
-		if (err) {
-			console.error(err);
-			return;
-		}
+		if (err) throw error;
 		console.log(parser(data));
 	});
 }else if(webMode){
 	// browser-mode
+	fs.readFile(fileName, 'utf8', (err, data) => {
+		if (err) throw error;
+		var server = http.createServer(function(req, res) {
+			res.writeHead(200, {'Content-Type': 'text/html'});
+			res.write(data);
+			res.write('<pre>' + parser(data) + '</pre>');
+			res.end();
+		}).listen(PORT);
+		console.log('listening on http://localhost:'+PORT);
+	});
 }
