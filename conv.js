@@ -112,6 +112,21 @@ const webMode = process.argv.indexOf('-w') > -1 ? true : false;
 
 fileName = path.resolve(process.argv[3]);
 
+let encode = str => {
+	let buf = [];
+
+	for (var i = str.length - 1; i >= 0; i--) {
+		buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
+	}
+	return buf.join('');
+}
+
+let decode = str => {
+	return str.replace(/&#(\d+);/g, function(match, dec) {
+		return String.fromCharCode(dec);
+	});
+}
+
 if(fileMode){
 	// load the file
 	fs.readFile(fileName, 'utf8', (err, data) => {
@@ -124,8 +139,9 @@ if(fileMode){
 		if (err) throw error;
 		var server = http.createServer(function(req, res) {
 			res.writeHead(200, {'Content-Type': 'text/html'});
-			res.write(data);
-			res.write('<pre>' + parser(data) + '</pre>');
+			res.write('<html><head></head><body>');
+			res.write('<pre><code>' + encode(data) + '</code></pre>');
+			res.write('<hr /><pre>' + parser(data) + '</pre>');
 			res.end();
 		}).listen(PORT);
 		console.log('listening on http://localhost:'+PORT);
